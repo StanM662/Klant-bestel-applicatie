@@ -1,0 +1,122 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+body 
+{
+    font-family: Arial;
+    font-size: 14px;
+    color: black;
+    background-color: white;
+    
+}
+
+
+.text
+{
+    color: white;
+    font-size: 14px;
+    font-family: Arial;
+}
+h1
+{
+    text-align: center;
+}
+
+button
+{
+    margin-left:20px;
+    color: black;
+    background-color: white;
+}
+
+.productList 
+{
+    border: 2px solid black;
+    padding: 25px;
+}
+.product 
+{
+    list-style: square;
+    margin-bottom: 8px;
+    margin-left: 25px;
+    text-align: left;
+}
+
+.info 
+{
+    opacity: 0.5;
+    top: 0;
+    left: 0;
+    position: absolute;
+    margin-top: 25px;
+    margin-left: 25px;
+}
+
+
+img 
+{
+    height: 75px;
+    width: 75px;
+    top: 0;
+    right: 0;
+    position: absolute;
+}
+
+ul 
+{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.voorraad
+{
+    text-align: center;
+}
+
+.prijs
+{
+    text-align: right;
+}
+
+#leftText
+{
+  text-align: left;
+  border-bottom: 2px solid black;
+}
+#middleText
+{
+  text-align: center;
+  border-bottom: 2px solid black;
+}
+#rightText
+{
+  text-align: right;
+  border-bottom: 2px solid black;
+}

@@ -1,0 +1,150 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "";
+}
+
+@{
+    // Lijsten voor productnamen, prijzen en voorraad
+    List<float> prijsLijst = new List<float>
+    {
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    };
+
+    List<float> voorraadLijst = new List<float>
+    {
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    };
+
+    List<string> productList = new List<string>
+    {
+        "Product 1",
+        "Product 2",
+        "Product 3",
+        "Product 4",
+        "Product 5",
+        "Product 6",
+        "Product 7",
+        "Product 8",
+        "Product 9",
+        "Product 10",
+    };
+
+    
+}
+
+<!-- Main html file -->
+<body>
+    <!-- Text boven tabel met info -->
+    <div style="display: flex; width: 100%;">
+        <h4 id="leftText" style="flex: 1;">Product</h4>
+        <h4 id="middleText" style="flex: 1;">Voorraad</h4>
+        <h4 id="rightText" style="flex: 1;">Prijs</h4>
+    </div>
+
+    <!-- Productenlijst -->
+    <div class="productList">
+        <!-- Product div dat dynamisch wordt toegevoegd met het aantal producten -->
+        <div class="producten">
+            @for (int i = 0; i < productList.Count(); i++)
+            {
+                <li class="product">
+                    @productList[i]
+                    <form method="post">
+                        <input type="hidden" name="productId" value="@productList[i]" />
+                        <button type="submit" name="action" value="addProduct">Toevoegen</button>
+                        <button type="submit" name="action" value="removeProduct">Verwijderen</button>
+                    </form>
+                    <div class="voorraad">@voorraadLijst[i]</div>
+                    <div class="prijs">€@prijsLijst[i]</div>
+                </li>
+                <br/>
+            }
+        </div>
+    </div>
+
+    <!-- Knoppen onder aan de pagina -->
+    <div class="buttons">
+        <form method="post">
+            <input type="hidden" name="action" value="checkout" class="checkout" />
+            <button type="submit">Doorgaan naar checkout</button>
+        </form>
+
+        <form method="post">
+            <input type="hidden" name="action" value="orderHistory" />
+            <button type="submit">Bekijk orderhistorie</button>
+        </form>
+    </div>
+
+    <!-- showCart bool om te bepalen of de winkelwagen zichtbaar moet zijn of niet -->
+    @{
+        bool showCart = Model.Cart.Count() > 0;
+    }
+    
+    <br>
+    <br>
+    <br>
+    <!-- Winkelwagen -->
+    @if (showCart)
+    {
+        <div class="cart">
+            <h2>Winkelwagentje</h2>
+            <p>Producten in winkelwagen: @Model.Cart.Count()</p>
+            <ul>
+                @foreach (var product in Model.Cart)
+                {
+                    <li>@product</li>
+                }
+            </ul>
+            <br>
+            <br>
+
+            @if (Model.confirmOrderbtn)
+            {
+                <form method="post">
+                    <input type="hidden" name="action" value="checkoutConfirm" />
+                    <button type="submit">Bevestig bestelling</button>
+                </form>
+            }
+            <br>
+            <br>
+        </div>
+    }
+
+    <br>
+
+    <!-- Orderhistorie -->
+    @if (Model.showOrderHistory)
+    {
+        <div class="orderHistory">
+            <h2>Orderhistorie</h2>
+                <ul>
+                    @foreach (var order in Model.orderHistory)
+                    {
+                        <li>@order</li>
+
+                    }
+                </ul>
+        </div>
+    }
+
+    <script src='app.js'></script>
+</body>
