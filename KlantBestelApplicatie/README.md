@@ -1,1 +1,3 @@
-# KE03_INTDEV_SE_1_Base
+# ReadMe file
+# Gemaakt door Stan Morreau
+# Studentnummer 2403308
