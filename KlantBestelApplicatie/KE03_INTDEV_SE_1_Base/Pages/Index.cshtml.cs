@@ -9,6 +9,11 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 {
     public class IndexModel : PageModel
     {
+        // Lijsten voor productnamen, prijzen en voorraad
+        public List<float> prijsLijst = new List<float>();
+        public List<string> beschrijvingLijst = new List<string>();
+        public List<string> productList = new List<string>();
+
         // Logger voor debuggen
         private readonly ILogger<IndexModel> _logger;
 
@@ -20,29 +25,46 @@ namespace KE03_INTDEV_SE_1_Base.Pages
         // Repositories
         private readonly IOrderRepository _orderRepository;
         private readonly ICustomerRepository _customerRepository;
-        
+        private readonly IPartRepository _partRepository;
+        private readonly IProductRepository _productRepository;
         // Lijsten
         public List<string> orderHistory { get; set; } = new List<string>();
 
         public List<Product> Products = new List<Product>();
-
-        // Add the missing repository field for _productRepository  
-        private readonly IProductRepository _productRepository;
         public IList<Customer> Customers { get; set; }
 
         // Constructor voor IndexModel
-        public IndexModel(ILogger<IndexModel> logger, ICustomerRepository customerRepository, IOrderRepository orderRepository, IProductRepository productRepository)
+        public IndexModel(ILogger<IndexModel> logger, ICustomerRepository customerRepository, IOrderRepository orderRepository, IProductRepository productRepository, IPartRepository partRepository)
         {
             _logger = logger;
             _customerRepository = customerRepository;
             _orderRepository = orderRepository;
             _productRepository = productRepository;
+            _partRepository = partRepository;
             Customers = new List<Customer>();
+
         }
 
         // OnGet methode (dus wanneer de pagina geladen wordt)
         public void OnGet()
         {
+            Random rand = new Random();
+            // Haal alle parts op uit de part repository
+            foreach (var item in _partRepository.GetAllParts())
+            {
+                productList.Add(item.Name);
+                prijsLijst.Add(rand.Next(4, 21));
+                beschrijvingLijst.Add(item.Description);
+            }
+
+            // Haal alle producten op uit de order repository
+            foreach (var item in _productRepository.GetAllProducts())
+            {
+                productList.Add(item.Name);
+                prijsLijst.Add(item.Price);
+                beschrijvingLijst.Add(item.Description);
+            }
+
             // Haalt de producten lijst op uit de sessie
             var productsJson = HttpContext.Session.GetString("Products");
             Products = productsJson != null
@@ -67,6 +89,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages
             Product product = new Product();
             var action = Request.Form["action"];
             product.Name = Request.Form["productId"];
+            product.Description = Request.Form["omschrijving"];
             try
             {
                 product.Price = float.Parse(Request.Form["prijs"]);
@@ -74,8 +97,9 @@ namespace KE03_INTDEV_SE_1_Base.Pages
             catch (Exception ex)
             {
                 _logger.LogError($"Fout bij het ophalen van de prijs: {ex.Message}");
-                product.Price = 0; // Standaardwaarde
+                product.Price = 0;
             }
+
 
                 switch (action)
             {

@@ -4,59 +4,12 @@
     ViewData["Title"] = "";
 }
 
-@{
-    // Lijsten voor productnamen, prijzen en voorraad
-    List<float> prijsLijst = new List<float>
-    {
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-    };
-
-    List<float> voorraadLijst = new List<float>
-    {
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-    };
-
-    List<string> productList = new List<string>
-    {
-        "Product 1",
-        "Product 2",
-        "Product 3",
-        "Product 4",
-        "Product 5",
-        "Product 6",
-        "Product 7",
-        "Product 8",
-        "Product 9",
-        "Product 10",
-    };
-
-    
-}
-
 <!-- Main html file -->
 <body>
     <!-- Text boven tabel met info -->
     <div style="display: flex; width: 100%;">
         <h4 id="leftText" style="flex: 1;">Product</h4>
-        <h4 id="middleText" style="flex: 1;">Voorraad</h4>
+        <h4 id="middleText" style="flex: 1;">Beschrijving</h4>
         <h4 id="rightText" style="flex: 1;">Prijs</h4>
     </div>
 
@@ -64,17 +17,16 @@
     <div class="productList">
         <!-- Product div dat dynamisch wordt toegevoegd met het aantal producten -->
         <div class="producten">
-            @for (int i = 0; i < productList.Count(); i++)
+            @for (int i = 0; i < Model.productList.Count(); i++)
             {
                 <li class="product">
-                    @productList[i]
+                    @Model.productList[i]
                     <form method="post">
-                        <input type="hidden" name="productId" value="@productList[i]" />
-                        <input type="hidden" name="prijs" value="@prijsLijst[i]" />
-                        <button type="submit" name="action" value="addProduct">Toevoegen</button>
-                        <button type="submit" name="action" value="removeProduct">Verwijderen</button>
-                        <div class="voorraad">@voorraadLijst[i]</div>
-                        <div class="prijs">€@prijsLijst[i]</div>
+                        <input type="hidden" name="productId" value="@Model.productList[i]" />
+                        <input type="hidden" name="prijs" value="@Model.prijsLijst[i]" />
+                        <button type="submit" name="action" value="addProduct">Bestellen</button>
+                        <div class="beschrijving">@Model.beschrijvingLijst[i]</div>
+                        <div class="prijs">€@Model.prijsLijst[i]</div>
                     </form>
                 </li>
                 <br/>
