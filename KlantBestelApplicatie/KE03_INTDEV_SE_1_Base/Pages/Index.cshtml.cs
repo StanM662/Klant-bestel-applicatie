@@ -9,7 +9,10 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 {
     public class IndexModel : PageModel
     {
-        // Lijsten voor productnamen, prijzen en voorraad
+
+        public Customer? SelectedCustomer { get; set; }
+
+        // Lijsten voor productnamen, prijzen en beschrijvingen
         public List<float> prijsLijst = new List<float>();
         public List<string> beschrijvingLijst = new List<string>();
         public List<string> productList = new List<string>();
@@ -27,6 +30,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages
         private readonly ICustomerRepository _customerRepository;
         private readonly IPartRepository _partRepository;
         private readonly IProductRepository _productRepository;
+
         // Lijsten
         public List<string> orderHistory { get; set; } = new List<string>();
 
@@ -74,6 +78,13 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 
             Customers = _customerRepository.GetAllCustomers().ToList();
             _logger.LogInformation($"getting all {Customers.Count} customers");
+
+            var id = HttpContext.Session.GetInt32("SelectedCustomerId");
+            if (id.HasValue)
+            {
+                SelectedCustomer = _customerRepository.GetCustomerById(id.Value);
+            }
+
         }
 
         // OnPost methode (dus wanneer er een actie uitgevoerd wordt)
@@ -88,20 +99,23 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 
             Product product = new Product();
             var action = Request.Form["action"];
-            product.Name = Request.Form["productId"];
+            int.TryParse(Request.Form["productId"], out int productId);
+            product.Id = productId;
+
+            product.Name = Request.Form["productName"];
             product.Description = Request.Form["omschrijving"];
-            try
+
+            if (!string.IsNullOrWhiteSpace(Request.Form["prijs"]) && float.TryParse(Request.Form["prijs"], out float price))
             {
-                product.Price = float.Parse(Request.Form["prijs"]);
+                product.Price = price;
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError($"Fout bij het ophalen van de prijs: {ex.Message}");
-                product.Price = 0;
+                product.Price = 0.0f;
             }
 
 
-                switch (action)
+            switch (action)
             {
                 case "addProduct":
                     Products.Add(product);
@@ -132,10 +146,19 @@ namespace KE03_INTDEV_SE_1_Base.Pages
         {
             try
             {
-                var customer = _customerRepository.GetAllCustomers().FirstOrDefault();
+                // Get customer ID from session
+                var selectedCustomerId = HttpContext.Session.GetInt32("SelectedCustomerId");
+                if (!selectedCustomerId.HasValue)
+                {
+                    _logger.LogError("Geen geselecteerde klant gevonden in de sessie.");
+                    return;
+                }
+
+                // Get the correct customer from the repository
+                var customer = _customerRepository.GetCustomerById(selectedCustomerId.Value);
                 if (customer == null)
                 {
-                    _logger.LogError("Geen customer gevonden voor order.");
+                    _logger.LogError($"Klant met ID {selectedCustomerId.Value} niet gevonden in de database.");
                     return;
                 }
 
@@ -147,7 +170,6 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 
                 foreach (var product in Products)
                 {
-                    // Assuming you have a method to get product from DB by Id
                     var existingProduct = _productRepository.GetProductById(product.Id);
                     if (existingProduct != null)
                     {
@@ -155,7 +177,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                     }
                     else
                     {
-                        _logger.LogWarning($"Product with Id {product.Id} not found in DB.");
+                        _logger.LogWarning($"Product met ID {product.Id} niet gevonden in de database.");
                     }
                 }
 
@@ -164,13 +186,14 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                 Products.Clear();
                 HttpContext.Session.SetString("Products", JsonSerializer.Serialize(Products));
                 confirmOrder = false;
-                _logger.LogInformation("Bestelling succesvol verwerkt en opgeslagen.");
+                _logger.LogInformation($"Bestelling succesvol opgeslagen voor klant: {customer.Name}");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Fout bij het verwerken van de bestelling: {ex.Message}");
             }
         }
+
 
 
 
@@ -187,7 +210,12 @@ namespace KE03_INTDEV_SE_1_Base.Pages
         {
             try
             {
-                var orders = _orderRepository.GetAllOrders();
+                var customerId = HttpContext.Session.GetInt32("SelectedCustomerId");
+                if (!customerId.HasValue) return;
+
+                var orders = _orderRepository.GetAllOrders()
+                    .Where(o => o.Customer.Id == customerId.Value);
+
                 orderHistory = new List<string>();
           
                 foreach (var order in orders)

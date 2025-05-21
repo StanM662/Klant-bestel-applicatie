@@ -34,7 +34,8 @@ namespace DataAccessLayer.Repositories
         {
             return _context.Orders
                 .Include(o => o.Customer)
-                .Include(o => o.Products);
+                .Include(o => o.Products)
+                .ToList();
         }
 
         public Order? GetOrderById(int id)

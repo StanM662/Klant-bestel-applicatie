@@ -1,8 +1,22 @@
 ﻿@page
 @model PrivacyModel
-@{
-    ViewData["Title"] = "Privacy Policy";
-}
 <h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<form method="post">
+    <label for="customerSelect">Kies een klant:</label>
+    <select asp-for="SelectedCustomerId" id="customerSelect" name="SelectedCustomerId">
+        @foreach (var customer in Model.Customers)
+        {
+            <option value="@customer.Id">@customer.Name</option>
+        }
+    </select>
+    <button type="submit">Inloggen</button>
+</form>
+
+@if (Model.SelectedCustomer != null)
+{
+    <div>
+        <h2>Welkom, @Model.SelectedCustomer.Name!</h2>
+        <p>Adres: @Model.SelectedCustomer.Address</p>
+    </div>
+}

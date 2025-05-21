@@ -1,11 +1,21 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "";
+    ViewData["Title"] = "Klant Bestel Applicatie";
 }
 
 <!-- Main html file -->
 <body>
+    @if (Model.SelectedCustomer != null)
+    {
+        <p>Hello, @Model.SelectedCustomer.Name!</p>
+        <p>Address: @Model.SelectedCustomer.Address</p>
+    }
+    else
+    {
+        <p>No customer selected. <a href="/Privacy">Select one here</a>.</p>
+    }
+    <br />
     <!-- Text boven tabel met info -->
     <div style="display: flex; width: 100%;">
         <h4 id="leftText" style="flex: 1;">Product</h4>
@@ -22,9 +32,10 @@
                 <li class="product">
                     @Model.productList[i]
                     <form method="post">
-                        <input type="hidden" name="productId" value="@Model.productList[i]" />
+                        <input type="hidden" name="productName" value="@Model.productList[i]" />
                         <input type="hidden" name="prijs" value="@Model.prijsLijst[i]" />
-                        <button type="submit" name="action" value="addProduct">Bestellen</button>
+                        <button type="submit" name="action" value="addProduct">Toevoegen</button>
+                        <button type="submit" name="action" value="removeProduct">Verwijderen</button>
                         <div class="beschrijving">@Model.beschrijvingLijst[i]</div>
                         <div class="prijs">€@Model.prijsLijst[i]</div>
                     </form>
@@ -98,6 +109,10 @@
                 </ul>
         </div>
     }
+
+    <br>
+	<br>
+	<br>
 
     <script src='app.js'></script>
 </body>

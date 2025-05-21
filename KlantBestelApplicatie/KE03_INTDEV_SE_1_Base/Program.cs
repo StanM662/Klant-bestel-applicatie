@@ -42,8 +42,19 @@ namespace KE03_INTDEV_SE_1_Base
 
                 var context = services.GetRequiredService<MatrixIncDbContext>();
                 context.Database.EnsureCreated();
+
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+
+                // Clear any tracked entities to avoid duplicate tracking conflicts
+                foreach (var entry in context.ChangeTracker.Entries())
+                {
+                    entry.State = EntityState.Detached;
+                }
+
                 MatrixIncDbInitializer.Initialize(context);
             }
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
