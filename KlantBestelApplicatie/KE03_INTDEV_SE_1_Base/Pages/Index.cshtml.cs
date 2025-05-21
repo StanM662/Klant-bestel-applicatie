@@ -1,5 +1,6 @@
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Models;
+using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
@@ -8,83 +9,81 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 {
     public class IndexModel : PageModel
     {
-        private const string CartSessionKey = "Cart";
-        private static bool _firstVisit = true;
+        // Logger voor debuggen
         private readonly ILogger<IndexModel> _logger;
+
+        // Bools
         public bool showOrderHistory = false;
         public bool confirmOrder = false;
         public bool confirmOrderbtn = false;
+
+        // Repositories
         private readonly IOrderRepository _orderRepository;
         private readonly ICustomerRepository _customerRepository;
-
-        public IList<Customer> Customers { get; set; }
-        // Lijsten voor de winkelmand en orderhistorie
-        public List<string> Cart { get; set; } = new List<string>();
+        
+        // Lijsten
         public List<string> orderHistory { get; set; } = new List<string>();
+
         public List<Product> Products = new List<Product>();
 
-        public IndexModel(ILogger<IndexModel> logger, ICustomerRepository customerRepository)
+        // Add the missing repository field for _productRepository  
+        private readonly IProductRepository _productRepository;
+        public IList<Customer> Customers { get; set; }
+
+        // Constructor voor IndexModel
+        public IndexModel(ILogger<IndexModel> logger, ICustomerRepository customerRepository, IOrderRepository orderRepository, IProductRepository productRepository)
         {
             _logger = logger;
             _customerRepository = customerRepository;
+            _orderRepository = orderRepository;
+            _productRepository = productRepository;
             Customers = new List<Customer>();
         }
 
         // OnGet methode (dus wanneer de pagina geladen wordt)
         public void OnGet()
         {
+            // Haalt de producten lijst op uit de sessie
+            var productsJson = HttpContext.Session.GetString("Products");
+            Products = productsJson != null
+                ? JsonSerializer.Deserialize<List<Product>>(productsJson) ?? new List<Product>()
+                : new List<Product>();
+
+
             Customers = _customerRepository.GetAllCustomers().ToList();
             _logger.LogInformation($"getting all {Customers.Count} customers");
-
-            // Winkelwagen ophalen uit session
-            var cartJson = HttpContext.Session.GetString(CartSessionKey);
-            Cart = cartJson != null ? JsonSerializer.Deserialize<List<string>>(cartJson) ?? new List<string>() : new List<string>();
-
-            // Orderhistorie ophalen via repository
-            if (showOrderHistory)
-            {
-                LoadOrderHistory();
-            }
-
-
-
-            // if (_firstVisit)
-            //{
-            //    if (System.IO.File.Exists("Cart.txt"))
-            //        System.IO.File.Delete("Cart.txt");
-            //    if (System.IO.File.Exists("orderHistory.txt"))
-            //        System.IO.File.Delete("orderHistory.txt");
-            //    _firstVisit = false;
-            //}
-
-            //if (System.IO.File.Exists("Cart.txt"))
-            //    Cart = new List<string>(System.IO.File.ReadAllLines("Cart.txt"));
-
-            //if (showOrderHistory && System.IO.File.Exists("orderHistory.txt"))
-            //    orderHistory = new List<string>(System.IO.File.ReadAllLines("orderHistory.txt"));
-
-            //if (!System.IO.File.Exists("orderHistory.txt"))
-            //    System.IO.File.Create("orderHistory.txt"); 
         }
 
         // OnPost methode (dus wanneer er een actie uitgevoerd wordt)
         public IActionResult OnPost()
         {
-            // Winkelwagen ophalen uit session
-            var cartJson = HttpContext.Session.GetString(CartSessionKey);
-            Cart = cartJson != null ? JsonSerializer.Deserialize<List<string>>(cartJson) ?? new List<string>() : new List<string>();
+            // Haalt de producten lijst op uit de sessie
+            var productsJson = HttpContext.Session.GetString("Products");
+            Products = productsJson != null
+                ? JsonSerializer.Deserialize<List<Product>>(productsJson) ?? new List<Product>()
+                : new List<Product>();
 
+
+            Product product = new Product();
             var action = Request.Form["action"];
-            var productId = Request.Form["productId"];
-            var product = $"{productId}";
+            product.Name = Request.Form["productId"];
+            try
+            {
+                product.Price = float.Parse(Request.Form["prijs"]);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Fout bij het ophalen van de prijs: {ex.Message}");
+                product.Price = 0; // Standaardwaarde
+            }
 
-            switch (action)
+                switch (action)
             {
                 case "addProduct":
-                    Cart.Add(product);
+                    Products.Add(product);
                     break;
                 case "removeProduct":
-                    Cart.Remove(product);
+                    Products.Remove(product);
                     break;
                 case "orderHistory":
                     OrderHistory();
@@ -95,15 +94,13 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                 case "checkoutConfirm":
                     Checkout();
                     confirmOrderbtn = false;
-                    break;
+                    return RedirectToPage();
                 default:
                     Console.WriteLine("Ongeldige actie.");
                     break;
             }
 
-            // Winkelwagen opslaan in session
-            HttpContext.Session.SetString(CartSessionKey, JsonSerializer.Serialize(Cart));
-
+            HttpContext.Session.SetString("Products", JsonSerializer.Serialize(Products));
             return Page();
         }
 
@@ -111,32 +108,47 @@ namespace KE03_INTDEV_SE_1_Base.Pages
         {
             try
             {
+                var customer = _customerRepository.GetAllCustomers().FirstOrDefault();
+                if (customer == null)
+                {
+                    _logger.LogError("Geen customer gevonden voor order.");
+                    return;
+                }
+
                 var newOrder = new Order
                 {
-                    OrderDate = DateTime.Now
-                    // Products niet hier initialiseren!
+                    OrderDate = DateTime.Now,
+                    Customer = customer
                 };
 
-                // Zorg dat Products in de Order-constructor wordt geïnitialiseerd!
-                foreach (var productId in Cart)
+                foreach (var product in Products)
                 {
-                    newOrder.Products.Add(new Product
+                    // Assuming you have a method to get product from DB by Id
+                    var existingProduct = _productRepository.GetProductById(product.Id);
+                    if (existingProduct != null)
                     {
-                        Id = int.Parse(productId)
-                    });
+                        newOrder.Products.Add(existingProduct);
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Product with Id {product.Id} not found in DB.");
+                    }
                 }
+
                 _orderRepository.AddOrder(newOrder);
 
-                Cart.Clear();
+                Products.Clear();
+                HttpContext.Session.SetString("Products", JsonSerializer.Serialize(Products));
                 confirmOrder = false;
-                _logger.LogInformation("Bestelling succesvol verwerkt.");
+                _logger.LogInformation("Bestelling succesvol verwerkt en opgeslagen.");
             }
-            
             catch (Exception ex)
             {
                 _logger.LogError($"Fout bij het verwerken van de bestelling: {ex.Message}");
             }
         }
+
+
 
         private void OrderHistory()
         {
@@ -153,13 +165,13 @@ namespace KE03_INTDEV_SE_1_Base.Pages
             {
                 var orders = _orderRepository.GetAllOrders();
                 orderHistory = new List<string>();
-
+          
                 foreach (var order in orders)
                 {
-                    orderHistory.Add($"Bestelling #{order.Id} op {order.OrderDate:g}");
+                    orderHistory.Add($"Bestelling #{order.Id}");
                     foreach (var item in order.Products)
                     {
-                        orderHistory.Add($" - {item.Id}");
+                        orderHistory.Add($" - {item.Name}");
                     }
                     orderHistory.Add("Order compleet");
                     orderHistory.Add("");

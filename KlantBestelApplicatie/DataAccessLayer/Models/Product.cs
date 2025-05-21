@@ -9,13 +9,21 @@ namespace DataAccessLayer.Models
 {
     public class Product
     {        
+        public Product()
+        {
+            Id = 1;
+            Name = "Null";
+            Description = "Null";
+            Price = 0;
+
+        }
         public int Id { get; set; }
 
         public string Name { get; set; }
 
         public string Description { get; set; }
 
-        public decimal Price { get; set; }
+        public float Price { get; set; }
 
         public ICollection<Order> Orders { get; } = new List<Order>();
 

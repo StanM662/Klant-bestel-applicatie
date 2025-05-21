@@ -70,11 +70,12 @@
                     @productList[i]
                     <form method="post">
                         <input type="hidden" name="productId" value="@productList[i]" />
+                        <input type="hidden" name="prijs" value="@prijsLijst[i]" />
                         <button type="submit" name="action" value="addProduct">Toevoegen</button>
                         <button type="submit" name="action" value="removeProduct">Verwijderen</button>
+                        <div class="voorraad">@voorraadLijst[i]</div>
+                        <div class="prijs">€@prijsLijst[i]</div>
                     </form>
-                    <div class="voorraad">@voorraadLijst[i]</div>
-                    <div class="prijs">€@prijsLijst[i]</div>
                 </li>
                 <br/>
             }
@@ -96,7 +97,7 @@
 
     <!-- showCart bool om te bepalen of de winkelwagen zichtbaar moet zijn of niet -->
     @{
-        bool showCart = Model.Cart.Count() > 0;
+        bool showCart = Model.Products.Count() > 0;
     }
     
     <br>
@@ -107,11 +108,11 @@
     {
         <div class="cart">
             <h2>Winkelwagentje</h2>
-            <p>Producten in winkelwagen: @Model.Cart.Count()</p>
+            <p>Producten in winkelwagen: @Model.Products.Count()</p>
             <ul>
-                @foreach (var product in Model.Cart)
+                @foreach (var product in Model.Products)
                 {
-                    <li>@product</li>
+                    <li>@product.Name</li>
                 }
             </ul>
             <br>
