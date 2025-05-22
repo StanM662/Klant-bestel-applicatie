@@ -16,6 +16,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages
         public List<float> prijsLijst = new List<float>();
         public List<string> beschrijvingLijst = new List<string>();
         public List<string> productList = new List<string>();
+        public List<int> productIdList = new List<int>();
 
         // Logger voor debuggen
         private readonly ILogger<IndexModel> _logger;
@@ -79,6 +80,8 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 
             // Haalt de producten lijst op uit de sessie
             var productsJson = HttpContext.Session.GetString("Products");
+            _logger.LogInformation("Products JSON uit sessie: " + productsJson);
+
             Products = productsJson != null
                 ? JsonSerializer.Deserialize<List<Product>>(productsJson) ?? new List<Product>()
                 : new List<Product>();
@@ -105,7 +108,12 @@ namespace KE03_INTDEV_SE_1_Base.Pages
             switch (action)
             {
                 case "addProduct":
-                    Products.Add(product);
+                    var dbProduct = _productRepository.GetProductById(productId);
+                    if (dbProduct != null)
+                    {
+                        Products.Add(dbProduct);
+                    }
+
                     break;
 
                 case "removeProduct":
@@ -135,6 +143,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages
             }
 
             HttpContext.Session.SetString("Products", JsonSerializer.Serialize(Products));
+
             return Page();
         }
 
@@ -167,17 +176,21 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                 foreach (var product in Products)
                 {
                     var existingProduct = _productRepository.GetProductById(product.Id);
-                    if (existingProduct != null)
+
+                    if (existingProduct == null)
                     {
-                        newOrder.Products.Add(existingProduct);
+                        _logger.LogError($"Product met ID {product.Id} niet gevonden in repository.");
                     }
                     else
                     {
-                        _logger.LogWarning($"Product met ID {product.Id} niet gevonden in de database.");
+                        _logger.LogInformation($"Product gevonden: {existingProduct.Name}");
+                        newOrder.Products.Add(existingProduct);
                     }
                 }
 
+                _logger.LogInformation($"Voor het opslaan: producten in order: {newOrder.Products.Count}");
                 _orderRepository.AddOrder(newOrder);
+                _logger.LogInformation("Order toegevoegd aan database.");
 
                 Products.Clear();
                 HttpContext.Session.SetString("Products", JsonSerializer.Serialize(Products));
@@ -210,9 +223,20 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                 if (!customerId.HasValue) return;
 
                 var orders = _orderRepository.GetAllOrders()
-                    .Where(o => o.Customer.Id == customerId.Value);
+                   .Where(o => o.Customer.Id == customerId.Value).ToList();
+
+                _logger.LogInformation($"Gevonden {orders.Count} orders voor klant ID {customerId}");
 
                 orderHistory = new List<string>();
+
+                foreach (var order in orders)
+                {
+                    _logger.LogInformation($"Order #{order.Id} bevat {order.Products.Count} producten.");
+                    foreach (var p in order.Products)
+                    {
+                        _logger.LogInformation($" - Product: {p.Name}");
+                    }
+                }
           
                 foreach (var order in orders)
                 {
@@ -234,23 +258,16 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 
         void VoegProductenToe()
         {
-            Random rand = new Random();
-
-            // Voeg parts toe
-            foreach (var item in _partRepository.GetAllParts())
-            {
-                productList.Add(item.Name);
-                prijsLijst.Add(rand.Next(4, 21));
-                beschrijvingLijst.Add(item.Description);
-            }
-
             // Voeg producten toe
             foreach (var item in _productRepository.GetAllProducts())
             {
+                productIdList.Add(item.Id);
                 productList.Add(item.Name);
                 prijsLijst.Add(item.Price);
                 beschrijvingLijst.Add(item.Description);
+                // Je zou hier ook een itemTypeList kunnen aanmaken
             }
+
 
         }
 

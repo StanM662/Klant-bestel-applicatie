@@ -36,6 +36,8 @@
                         <input type="hidden" name="prijs" value="@Model.prijsLijst[i]" />
                         <button type="submit" name="action" value="addProduct">Toevoegen</button>
                         <button type="submit" name="action" value="removeProduct">Verwijderen</button>
+                        <input type="hidden" name="productId" value="@Model.productIdList[i]" />
+                        <input type="hidden" name="itemType" value="product" />
                         <div class="beschrijving">@Model.beschrijvingLijst[i]</div>
                         <div class="prijs">€@Model.prijsLijst[i]</div>
                     </form>
