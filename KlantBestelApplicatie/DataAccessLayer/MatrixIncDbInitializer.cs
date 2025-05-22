@@ -47,20 +47,21 @@ namespace DataAccessLayer
                 new Product { Id = 4, Name = "Sentinel", Description = "De robots die de mensen in de Matrix aanvallen", Price = 999.99f },
                 new Product { Id = 5, Name = "Matrix Code", Description = "De groene code die de Matrix vormt", Price = 0.01f },
                 new Product { Id = 6, Name = "Red Pill", Description = "De pil die Neo neemt om de Matrix te verlaten", Price = 0.50f },
-                new Product { Id = 7, Name = "Blue Pill", Description = "De pil die Neo neemt om in de Matrix te blijven", Price = 0.50f }
+                new Product { Id = 7, Name = "Blue Pill", Description = "De pil die Neo neemt om in de Matrix te blijven", Price = 0.50f },
+                new Product { Id = 8, Name = "Tandwiel", Description = "Overdracht van rotatie in bijvoorbeeld de motor of luikmechanismen", Price = 1.60f},
+                new Product { Id = 9, Name = "M5 Boutje", Description = "Bevestiging van panelen, buizen of interne modules", Price = 0.80f},
+                new Product { Id = 10, Name = "Hydraulische cilinder", Description = "Openen/sluiten van zware luchtsluizen of bewegende onderdelen", Price = 5.99f},
+                new Product { Id = 11, Name = "Koelvloeistofpomp", Description = "Koeling van de motor of elektronische systemen.", Price = 4.99f},
+                new Product { Id = 12, Name = "M3 Moertje", Description = "Bevestiging van panelen, buizen of interne modules.", Price = 1.75f},
+                new Product { Id = 13, Name = "M3 Ringetje", Description = "Bevestiging van panelen, buizen of interne modules.", Price = 0.85f},
+                new Product { Id = 14, Name = "12V Batterij", Description = "12V Batterij dat wordt gebruikt om stroom te leveren.", Price = 1.50f},
+                new Product { Id = 15, Name = "Zonnebril", Description = "Zonnebril dat wordt gebruikt om de Matrix te kunnen zien.", Price = 2.60f}
             };
             context.Products.AddRange(products);
 
             var parts = new Part[]
             {
-                new Part { Id = 8, Name = "Tandwiel", Description = "Overdracht van rotatie in bijvoorbeeld de motor of luikmechanismen", },
-                new Part { Id = 9, Name = "M5 Boutje", Description = "Bevestiging van panelen, buizen of interne modules"},
-                new Part { Id = 10, Name = "Hydraulische cilinder", Description = "Openen/sluiten van zware luchtsluizen of bewegende onderdelen"},
-                new Part { Id = 11, Name = "Koelvloeistofpomp", Description = "Koeling van de motor of elektronische systemen."},
-                new Part { Id = 12, Name = "M3 Moertje", Description = "Bevestiging van panelen, buizen of interne modules."},
-                new Part { Id = 13, Name = "M3 Ringetje", Description = "Bevestiging van panelen, buizen of interne modules."},
-                new Part { Id = 14, Name = "12V Batterij", Description = "12V Batterij dat wordt gebruikt om stroom te leveren."},
-                new Part { Id = 15, Name = "Zonnebril", Description = "Zonnebril dat wordt gebruikt om de Matrix te kunnen zien."}
+                
             };
             context.Parts.AddRange(parts);
 

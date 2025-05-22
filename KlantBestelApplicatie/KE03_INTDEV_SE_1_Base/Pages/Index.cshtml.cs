@@ -113,7 +113,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                     {
                         Products.Add(dbProduct);
                     }
-
+                       
                     break;
 
                 case "removeProduct":
@@ -258,16 +258,14 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 
         void VoegProductenToe()
         {
-            // Voeg producten toe
             foreach (var item in _productRepository.GetAllProducts())
             {
                 productIdList.Add(item.Id);
                 productList.Add(item.Name);
                 prijsLijst.Add(item.Price);
                 beschrijvingLijst.Add(item.Description);
-                // Je zou hier ook een itemTypeList kunnen aanmaken
+                
             }
-
 
         }
 
