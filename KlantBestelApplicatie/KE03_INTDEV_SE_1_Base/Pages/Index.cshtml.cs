@@ -52,22 +52,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages
         // OnGet methode (dus wanneer de pagina geladen wordt)
         public void OnGet()
         {
-            Random rand = new Random();
-            // Haal alle parts op uit de part repository
-            foreach (var item in _partRepository.GetAllParts())
-            {
-                productList.Add(item.Name);
-                prijsLijst.Add(rand.Next(4, 21));
-                beschrijvingLijst.Add(item.Description);
-            }
-
-            // Haal alle producten op uit de order repository
-            foreach (var item in _productRepository.GetAllProducts())
-            {
-                productList.Add(item.Name);
-                prijsLijst.Add(item.Price);
-                beschrijvingLijst.Add(item.Description);
-            }
+            VoegProductenToe();
 
             // Haalt de producten lijst op uit de sessie
             var productsJson = HttpContext.Session.GetString("Products");
@@ -90,6 +75,8 @@ namespace KE03_INTDEV_SE_1_Base.Pages
         // OnPost methode (dus wanneer er een actie uitgevoerd wordt)
         public IActionResult OnPost()
         {
+            VoegProductenToe();
+
             // Haalt de producten lijst op uit de sessie
             var productsJson = HttpContext.Session.GetString("Products");
             Products = productsJson != null
@@ -120,19 +107,28 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                 case "addProduct":
                     Products.Add(product);
                     break;
+
                 case "removeProduct":
-                    Products.Remove(product);
+                    var toRemove = Products.FirstOrDefault(p => p.Id == product.Id);
+                    if (toRemove != null)
+                    {
+                        Products.Remove(toRemove);
+                    }
                     break;
+
                 case "orderHistory":
                     OrderHistory();
                     break;
+
                 case "checkout":
                     confirmOrderbtn = true;
                     break;
+
                 case "checkoutConfirm":
                     Checkout();
                     confirmOrderbtn = false;
                     return RedirectToPage();
+
                 default:
                     Console.WriteLine("Ongeldige actie.");
                     break;
@@ -235,5 +231,29 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                 _logger.LogError($"Fout bij het ophalen van de orderhistorie: {ex.Message}");
             }
         }
+
+        void VoegProductenToe()
+        {
+            Random rand = new Random();
+
+            // Voeg parts toe
+            foreach (var item in _partRepository.GetAllParts())
+            {
+                productList.Add(item.Name);
+                prijsLijst.Add(rand.Next(4, 21));
+                beschrijvingLijst.Add(item.Description);
+            }
+
+            // Voeg producten toe
+            foreach (var item in _productRepository.GetAllProducts())
+            {
+                productList.Add(item.Name);
+                prijsLijst.Add(item.Price);
+                beschrijvingLijst.Add(item.Description);
+            }
+
+        }
+
+
     }
 }
