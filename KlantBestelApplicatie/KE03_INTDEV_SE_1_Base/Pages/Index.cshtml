@@ -1,19 +1,19 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Klant Bestel Applicatie";
+	ViewData["Title"] = "Klant Bestel Applicatie"; // Titel van de pagina
 }
 
 <!-- Main html file -->
 <body>
     @if (Model.SelectedCustomer != null)
     {
-        <p>Hello, @Model.SelectedCustomer.Name!</p>
-        <p>Address: @Model.SelectedCustomer.Address</p>
+        <p>Hallo, @Model.SelectedCustomer.Name!</p> // Naam van klant
+        <p>Address: @Model.SelectedCustomer.Address</p> // Adres van klant
     }
     else
     {
-        <p>No customer selected. <a href="/Privacy">Select one here</a>.</p>
+        <p>Geen klant geselecteerd. <a href="/Privacy">Selecteer hier een</a>.</p>
     }
     <br />
     <!-- Text boven tabel met info -->
@@ -32,14 +32,13 @@
                 <li class="product">
                     @Model.productList[i]
                     <form method="post">
-                        <input type="hidden" name="productName" value="@Model.productList[i]" />
-                        <input type="hidden" name="prijs" value="@Model.prijsLijst[i]" />
-                        <button type="submit" name="action" value="addProduct">Toevoegen</button>
-                        <button type="submit" name="action" value="removeProduct">Verwijderen</button>
-                        <input type="hidden" name="productId" value="@Model.productIdList[i]" />
-                        <input type="hidden" name="itemType" value="product" />
-                        <div class="beschrijving">@Model.beschrijvingLijst[i]</div>
-                        <div class="prijs">€@Model.prijsLijst[i]</div>
+						<input type="hidden" name="productName" value="@Model.productList[i]" /> <!-- Product naam -->
+                        <input type="hidden" name="prijs" value="@Model.prijsLijst[i]" /> <!-- Prijs van product --> 
+                        <button type="submit" name="action" value="addProduct">Toevoegen</button> <!-- Toevoegen knop -->
+						<button type="submit" name="action" value="removeProduct">Verwijderen</button> <!-- Verwijderen knop -->
+						<input type="hidden" name="productId" value="@Model.productIdList[i]" /> <!-- Product ID -->
+						<div class="beschrijving">@Model.beschrijvingLijst[i]</div> <!-- Beschrijving van product -->
+						<div class="prijs">€@Model.prijsLijst[i]</div> <!-- Prijs van product -->
                     </form>
                 </li>
                 <br/>
