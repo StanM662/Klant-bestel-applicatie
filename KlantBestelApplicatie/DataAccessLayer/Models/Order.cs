@@ -12,6 +12,7 @@ namespace DataAccessLayer.Models
         public Order()
         {
             Products = new List<Product>();
+            OrderItems = new List<OrderItem>();
         }
         public int Id { get; set; }
 
@@ -22,5 +23,6 @@ namespace DataAccessLayer.Models
         public Customer Customer { get; set; } = null!;
 
         public ICollection<Product> Products { get; } = new List<Product>();
+        public ICollection<OrderItem> OrderItems { get; set; }
     }
 }

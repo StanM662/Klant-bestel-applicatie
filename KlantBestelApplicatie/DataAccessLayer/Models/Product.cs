@@ -15,6 +15,7 @@ namespace DataAccessLayer.Models
             Name = "Null";
             Description = "Null";
             Price = 0;
+            Quantity = 0;
 
         }
         public int Id { get; set; }
@@ -24,8 +25,8 @@ namespace DataAccessLayer.Models
         public string Description { get; set; }
 
         public float Price { get; set; }
-
-        public ICollection<Order> Orders { get; } = new List<Order>();
+        public int Quantity { get; set; }
+        public List<Order> Orders { get; } = new List<Order>();
 
         public ICollection<Part> Parts { get; } = new List<Part>();
     }

@@ -60,12 +60,19 @@ button
     border: 2px solid black;
     padding: 25px;
 }
-.product 
-{
+.product {
     list-style: square;
     margin-bottom: 8px;
     margin-left: 25px;
     text-align: left;
+    border-top: 2px solid gray;
+    border-right: 2px solid gray;
+    border-left: 2px solid gray;
+    border-bottom: 2px solid gray;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 5px;
 }
 
 .info 
@@ -95,14 +102,14 @@ ul
     padding: 0;
 }
 
-.beschrijving
+.beschrijving 
 {
     text-align: center;
 }
 
-.prijs
-{
+.prijs {
     text-align: right;
+
 }
 
 #leftText

@@ -64,7 +64,7 @@
     @{
         bool showCart = Model.Products.Count() > 0;
     }
-    
+
     <br>
     <br>
     <br>
@@ -77,8 +77,15 @@
             <ul>
                 @foreach (var product in Model.Products)
                 {
-                    <li>@product.Name</li>
+                    <li>@product.Name | €@product.Price</li>
                 }
+
+                @foreach (var product in Model.Products)
+                {
+                    Model.totaalPrijs += product.Price;
+                }
+                ---------------------------------<br />
+                Totaalprijs: € @Model.totaalPrijs
             </ul>
             <br>
             <br>
