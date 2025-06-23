@@ -1,0 +1,63 @@
+﻿@page
+@model KE03_INTDEV_SE_1_Base.Pages.AccountModel
+
+<h1 class="mb-4">Account Settings</h1>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm p-4">
+            <h4 class="mb-3">Change Name</h4>
+            <form method="post" novalidate>
+                <input type="hidden" name="action" value="ChangeName" />
+                <div class="mb-3">
+                    <label for="newName" class="form-label">New Name</label>
+                    <input type="text" id="newName" name="newName" class="form-control" placeholder="Enter your new name" required />
+                </div>
+                <div class="mb-3">
+                    <label for="newPassword" class="form-label">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="New password" required />
+                </div>
+                <button class="btn btn-primary w-100" type="submit">Change Name</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm p-4">
+            <h4 class="mb-3">Change Password</h4>
+            <form method="post" novalidate>
+                <input type="hidden" name="action" value="ChangePassword" />
+                <div class="mb-3">
+                    <label for="oldPassword" class="form-label">Old Password</label>
+                    <input type="password" id="oldPassword" name="oldPassword" class="form-control" placeholder="Old password" required />
+                </div>
+                <div class="mb-3">
+                    <label for="newPassword" class="form-label">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="New password" required />
+                </div>
+                <button class="btn btn-primary w-100" type="submit">Change Password</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm p-4 my-4">
+    <h4 class="mb-3">Change Address</h4>
+    <form method="post" novalidate>
+        <input type="hidden" name="action" value="ChangeAddress" />
+        <div class="mb-3">
+            <label for="newAddress" class="form-label">New Address</label>
+            <input type="text" id="newAddress" name="newAddress" class="form-control" placeholder="Enter new address" required />
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Your password" required />
+        </div>
+        <button class="btn btn-primary w-100" type="submit">Change Address</button>
+    </form>
+</div>
+
+<form method="post" class="mb-5">
+    <input type="hidden" name="action" value="Logout" />
+    <button type="submit" class="btn btn-danger w-100">Logout</button>
+</form>

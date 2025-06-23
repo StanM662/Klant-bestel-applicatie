@@ -1,0 +1,42 @@
+﻿@page
+@model KE03_INTDEV_SE_1_Base.Pages.ProductsModel
+
+<h2 class="mb-4">Products</h2>
+
+@if (Model.Products == null || !Model.Products.Any())
+{
+    <div class="alert alert-info">No products available.</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var product in Model.Products)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text flex-grow-1">@product.Description</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="fw-bold text-success">€@product.Price.ToString("F2")</span>
+                            <form method="post" asp-action="AddToCart">
+                                <input type="hidden" name="productId" value="@product.Id" />
+                                <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    if (Model.Cart.Count > 0)
+    {
+        <form asp-action="GoToCart" method="post">
+            <input type="hidden" name="GoToCart" />
+            <button type="submit" class="btn btn-primary cart-btn">View Cart</button>
+        </form>
+
+    }
+
+}

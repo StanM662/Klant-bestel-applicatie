@@ -1,0 +1,50 @@
+﻿@page
+@model KE03_INTDEV_SE_1_Base.Pages.CartModel
+
+@if (Model.Cart.Count == 0)
+{
+    <div class="alert alert-info my-4" role="alert">
+        Your cart is empty.
+    </div>
+}
+else
+{
+    <div class="table-responsive rounded bg-white p-3 shadow-sm">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model.Cart)
+                {
+                    <tr>
+                        <td>@product.Name</td>
+                        <td>€@product.Price.ToString("F2")</td>
+                        <td>@product.Description</td>
+                        <td class="text-center">
+                            <form asp-action="RemoveFromCart" method="post" class="d-inline">
+                                <input type="hidden" name="productId" value="@product.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove from Cart">
+                                    <i class="bi bi-trash"></i> Remove
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    var totalPrice = Model.Cart.Sum(p => p.Price);
+
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <h5>Total Price: <span class="text-success">€@totalPrice.ToString("F2")</span></h5>
+        <a href="/Checkout" class="btn btn-success">Proceed to Checkout</a>
+    </div>
+}
+
+<a href="/Products" class="btn btn-primary">Continue Shopping</a>

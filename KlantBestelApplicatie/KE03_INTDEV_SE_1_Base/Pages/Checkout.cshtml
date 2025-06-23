@@ -1,0 +1,47 @@
+﻿@page
+@model KE03_INTDEV_SE_1_Base.Pages.CheckoutModel
+
+<h2 class="mb-4">Checkout</h2>
+
+<div class="table-responsive rounded bg-white p-3 shadow-sm">
+    <table class="table table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.Cart)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>€@product.Price.ToString("F2")</td>
+                    <td>@product.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@{
+    var totalPrice = Model.Cart.Sum(p => p.Price);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4>Total Price: <span class="text-success">€@totalPrice.ToString("F2")</span></h4>
+</div>
+
+<div class="d-flex gap-2">
+    <h4>Shipping to: @Model.customer.Address</h4>
+</div>
+
+
+<div class="d-flex gap-2">
+    <a href="/Products" class="btn btn-secondary flex-grow-1">Continue Shopping</a>
+
+    <form asp-action="Checkout" method="post" class="flex-grow-1">
+        <button type="submit" class="btn btn-success w-100">Confirm Purchase</button>
+    </form>
+</div>

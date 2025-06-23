@@ -25,6 +25,7 @@ namespace KE03_INTDEV_SE_1_Base
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddSession();
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 
@@ -42,25 +43,15 @@ namespace KE03_INTDEV_SE_1_Base
 
                 var context = services.GetRequiredService<MatrixIncDbContext>();
                 context.Database.EnsureCreated();
-
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
-
-                // Clear any tracked entities to avoid duplicate tracking conflicts
-                foreach (var entry in context.ChangeTracker.Entries())
-                {
-                    entry.State = EntityState.Detached;
-                }
-
                 MatrixIncDbInitializer.Initialize(context);
             }
 
-
+            app.UseSession();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseSession();
+
             app.UseAuthorization();
 
             app.MapRazorPages();

@@ -9,11 +9,7 @@ namespace DataAccessLayer.Models
 {
     public class Order
     {
-        public Order()
-        {
-            Products = new List<Product>();
-            OrderItems = new List<OrderItem>();
-        }
+        [Key]
         public int Id { get; set; }
 
         public DateTime OrderDate { get; set; }
@@ -23,6 +19,5 @@ namespace DataAccessLayer.Models
         public Customer Customer { get; set; } = null!;
 
         public ICollection<Product> Products { get; } = new List<Product>();
-        public ICollection<OrderItem> OrderItems { get; set; }
     }
 }
